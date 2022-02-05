@@ -83,6 +83,62 @@ namespace aoc {
         return os << "\033[2J\033[1;1H";
     }
 
+    int stoi(const std::string_view sv) {
+        int out = 0;
+        for (const auto& c : sv) {
+            switch (c) {
+                case '0':
+                    out *= 10; break;
+                case '1':
+                    out *= 10; out += 1; break;
+                case '2':
+                    out *= 10; out += 2; break;
+                case '3':
+                    out *= 10; out += 3; break;
+                case '4':
+                    out *= 10; out += 4; break;
+                case '5':
+                    out *= 10; out += 5; break;
+                case '6':
+                    out *= 10; out += 6; break;
+                case '7':
+                    out *= 10; out += 7; break;
+                case '8':
+                    out *= 10; out += 8; break;
+                case '9':
+                    out *= 10; out += 9; break;
+                default:
+                    throw std::runtime_error("Not an integer");
+            }
+        }
+        return out;
+    }
+
+    bool getline(std::string_view& s, std::string_view& out, const std::string_view delims) {
+        out = std::string_view();
+        do {
+            const size_t end = s.find_first_of(delims);
+
+            if (end != std::string_view::npos) {
+                out = s.substr(0, end);
+                s = s.substr(end + 1);
+            } else {
+                out = s;
+                s = std::string_view();
+                break;
+            }
+        } while (out.empty() && !s.empty());
+
+        return !s.empty() && !out.empty();
+    }
+
+    bool getline(std::string_view& s, std::string_view& out, const char delim) {
+        return getline(s, out, std::string_view(&delim, 1));
+    }
+    bool getline(std::string_view& s, std::string_view& out) {
+        return getline(s, out, std::string_view("\r\n", 2));
+    }
+
     bool getline(std::istream& s, std::string& out, const std::string_view delims) {
         char c;
         out.resize(0);
@@ -126,7 +182,7 @@ namespace aoc {
         std::string l;
         while (getline(s, l, delim)) {
             try {
-                int n = std::stoi(l);
+                int n = aoc::stoi(l);
                 op(n);
             } catch (...) { }
         }
@@ -135,7 +191,7 @@ namespace aoc {
         std::string l;
         while (getline(s, l, delims)) {
             try {
-                int n = std::stoi(l);
+                int n = aoc::stoi(l);
                 op(n);
             } catch (...) { }
         }
@@ -144,27 +200,27 @@ namespace aoc {
         std::string l;
         while (getline(s, l)) {
             try {
-                int n = std::stoi(l);
+                int n = aoc::stoi(l);
                 op(n);
             } catch (...) { }
         }
     }
     void parse_as_integers(const std::string& s, const char delim, UnaryIntFunction op) {
-        std::stringstream ss(s);
-        std::string l;
+        std::string_view ss(s);
+        std::string_view l;
         while (getline(ss, l, delim)) {
             try {
-                int n = std::stoi(l);
+                int n = aoc::stoi(l);
                 op(n);
             } catch (...) { }
         }
     }
     void parse_as_integers(const std::string& s, const std::string_view delims, UnaryIntFunction op) {
-        std::stringstream ss(s);
-        std::string l;
+        std::string_view ss(s);
+        std::string_view l;
         while (getline(ss, l, delims)) {
             try {
-                int n = std::stoi(l);
+                int n = aoc::stoi(l);
                 op(n);
             } catch (...) { }
         }
