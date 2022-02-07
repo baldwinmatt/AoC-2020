@@ -1,5 +1,10 @@
 #pragma once
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -83,6 +88,18 @@ namespace aoc {
         return os << "\033[2J\033[1;1H";
     }
 
+    bool ends_with(const std::string_view s, const std::string_view p) {
+        if (s.size() < p.size()) { return false; }
+        const auto e = s.substr(s.size() - p.size());
+        return e == p;
+    }
+
+    bool starts_with(const std::string_view s, const std::string_view p) {
+        if (s.size() < p.size()) { return false; }
+        const auto e = s.substr(0, p.size());
+        return e == p;
+    }
+
     int stoi(const std::string_view sv) {
         int out = 0;
         for (const auto& c : sv) {
@@ -114,8 +131,10 @@ namespace aoc {
         return out;
     }
 
-    bool getline(std::string_view& s, std::string_view& out, const std::string_view delims) {
+    bool getline(std::string_view& s, std::string_view& out, const std::string_view delims, bool return_empty = false) {
         out = std::string_view();
+        if (s.empty()) { return false; }
+
         do {
             const size_t end = s.find_first_of(delims);
 
@@ -127,9 +146,9 @@ namespace aoc {
                 s = std::string_view();
                 break;
             }
-        } while (out.empty() && !s.empty());
+        } while ((!return_empty && out.empty()) && !s.empty());
 
-        return !s.empty() && !out.empty();
+        return (return_empty || !out.empty());
     }
 
     bool getline(std::string_view& s, std::string_view& out, const char delim) {
@@ -267,4 +286,77 @@ namespace aoc {
 
     };
 
+    template<typename T>
+    class MappedFileSource {
+    public:
+
+        MappedFileSource()
+            : _fd(0)
+            , _size(0)
+            , _map(nullptr)
+        {}
+
+        MappedFileSource(const char *filename) 
+            : MappedFileSource()
+        {
+            map_file(filename);
+        }
+
+        MappedFileSource(int argc, char **argv)
+            : MappedFileSource()
+        {
+            if (argc < 2) {
+                throw std::runtime_error("Insufficient arguments");
+            }
+
+            map_file(argv[1]);
+        }
+
+        ~MappedFileSource() {
+            reset();
+        }
+
+        void reset() {
+            if (_map) {
+                ::munmap(_map, _size);
+            }
+            if (_fd) {
+                ::close(_fd);
+            }
+
+            _map = nullptr;
+            _fd = 0;
+            _size = 0;
+        }
+
+        void reset(const char *filename) {
+            this->reset();
+            this->map_file(filename);
+        }
+
+        void map_file(const char *filename) {
+            if (!filename) { throw std::runtime_error("map_file: nullptr"); }
+            if (_fd || _map || _size) { throw std::runtime_error("map_file: already mapped"); }
+
+            _fd = ::open(filename, O_RDONLY);
+            if (_fd == -1) { throw std::runtime_error("map_file: open failed"); }
+
+            struct stat fs;
+            int r = ::fstat(_fd, &fs);
+            if (r == -1) { reset(); throw std::runtime_error("map_file: fstat failed"); }
+            _size = fs.st_size;
+
+            _map = (T*)::mmap(0, _size, PROT_READ, MAP_SHARED, _fd, 0);
+            if (!_map) { reset(); throw std::runtime_error("map_file: mmap failed"); }
+        }
+
+        const T* data() const { return _map; }
+        size_t size() const { return _size; }
+
+    private:
+
+        int _fd;
+        size_t _size;
+        T* _map;
+    };
 };
