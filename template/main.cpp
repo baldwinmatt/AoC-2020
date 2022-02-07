@@ -1,21 +1,20 @@
 #include "aoc/helpers.h"
 
-#include <vector>
-
 namespace {
-  using IntVector = std::vector<int>;
+  using Result = std::pair<int, int>;
+  using MappedFileSource = aoc::MappedFileSource<char>;
 
-  const std::string SampleInput(R"()");
-  std::stringstream SampleStream(SampleInput);
+  constexpr std::string_view SampleInput(R"()");
   constexpr int SR_Part1 = 0;
   constexpr int SR_Part2 = 0;
 
-  const auto LoadInput = [](auto& f) {
-    std::vector<int> input;
-    aoc::parse_as_integers(f, [&](int i) {
-      input.push_back(i);
-    });
-    return input;
+  const auto LoadInput = [](auto f) {
+    Result r{0, 0};
+    std::string_view line;
+    while (aoc::getline(f, line)) {
+      
+    }
+    return r;
   };
 }
 
@@ -23,19 +22,19 @@ int main(int argc, char** argv) {
   aoc::AutoTimer t;
   const bool inTest = argc < 2;
 
-  std::vector<int>input;
+  Result r;
   if (inTest) {
-    input = LoadInput(SampleStream);
+    r = LoadInput(SampleInput);
   } else {
-    auto f = aoc::open_argv_1(argc, argv);
-    input = LoadInput(f);
+    std::unique_ptr<MappedFileSource>m(new MappedFileSource(argc, argv));
+    std::string_view f(m->data(), m->size());
+    r = LoadInput(f);
   }
 
   int part1 = 0;
   int part2 = 0;
 
-  assert(part1);
-  assert(part2);
+  std::tie(part1, part2) = r;
 
   aoc::print_results(part1, part2);
 
