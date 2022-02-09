@@ -100,8 +100,8 @@ namespace aoc {
         return e == p;
     }
 
-    int stoi(const std::string_view sv) {
-        int out = 0;
+    int64_t stoi(const std::string_view sv) {
+        int64_t out = 0;
         for (const auto& c : sv) {
             switch (c) {
                 case '0':
