@@ -19,11 +19,13 @@ namespace {
     std::string_view line;
     aoc::getline(f, line);
     input.first = aoc::stoi(line);
+    DEBUG_PRINT("Departure: " << input.first);
 
     while (aoc::getline(f, line, ",")) {
       constexpr std::string_view OOS("x");
-      const int bid = line == OOS ? 0 : aoc::stoi(line);
-      input.second.push_back(bid);
+      const int bus_id = line == OOS ? 0 : aoc::stoi(line);
+      input.second.push_back(bus_id);
+      DEBUG_PRINT("Bus ID: " << bus_id);
     }
 
     return input;
@@ -52,60 +54,38 @@ namespace {
 
   using Constraint = std::pair<int64_t, int64_t>;
   using Constraints = std::vector<Constraint>;
+  using GCD = std::tuple<int64_t, int64_t, int64_t>;
 
-  const auto XGCD = [](int64_t a, int64_t b) {
-    int64_t x0 = 0;
-    int64_t x1 = 1;
-    int64_t y0 = 1;
-    int64_t y1 = 0;
+  std::ostream& operator<<(std::ostream& os, const Constraint& c) {
+    os << "{ " << c.first << ", " << c.second << " }";
+    return os;
+  }
 
-    while (a) {
-      const int64_t _a = a;
-      const int64_t q = b / a;
-
-      a = ((b % a) + a) % a;
-      b = _a;
-
-      const int64_t _y0 = y0;
-      y0 = y1;
-      y1 = _y0 - q * y1;
-
-      const int64_t _x0 = x0;
-      x0 = x1;
-      x1 = _x0 - q * x1;
-    }
-
-    return std::tuple{b, x0, y0};
-  };
-
-  const auto CRT = [](const Constraint& an, const Constraint& bn) {
-    const int64_t a1 = an.first;
-    const int64_t a2 = an.second;
-    const int64_t n1 = bn.first;
-    const int64_t n2 = bn.second;
-
-    const auto gcd = XGCD(n1, n2);
-    const int64_t m1 = std::get<1>(gcd);
-    const int64_t m2 = std::get<2>(gcd);
-
-    const int64_t x = (a1 * m2 * n2) + (a2 * m1 * n1);
-    const int64_t n = n1 * n2;
-
-    return std::make_pair(x % n, n);
-  };
+  std::ostream& operator<<(std::ostream& os, const GCD& c) {
+    os << "{ " << std::get<0>(c) << ", " << std::get<1>(c) << ", " << std::get<2>(c) << " }";
+    return os;
+  }
 
   const auto FindEarliestOffset = [](const Input& input) {
+
+    size_t time = 0;
+    size_t step = 1;
+
     // convert input into constraints
     Constraints constraints;
-    constraints.reserve(input.second.size());
     for (size_t i = 0; i < input.second.size(); i++) {
       if (!input.second[i]) { continue; }
-      constraints.emplace_back(i, input.second[i]);
+      constraints.push_back({i, input.second[i]});
+      DEBUG_PRINT("Constraint: " << constraints.back());
     }
 
-    const auto r = std::accumulate(constraints.begin() + 1, constraints.end(), constraints.front(), CRT);
+    for (const auto &b : constraints) {
+      while ((time + b.first) % b.second != 0) { time += step; }
 
-    return r.second - r.first % r.second;
+      step *= b.second;
+    }
+
+    return time;
   };
 }
 
