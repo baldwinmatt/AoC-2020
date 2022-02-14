@@ -31,6 +31,7 @@ namespace {
   using Result = std::pair<int, int>;
 
   const auto FindTwoWithSum = [](const std::vector<int64_t>& input, const int64_t target, const size_t start) {
+    int64_t ret = 0;
     for (size_t base = start; base < input.size() - 1; base++) {
       const int64_t need = target - input[base];
 
@@ -41,10 +42,11 @@ namespace {
       }
     }
 
-    return 0LL;
+    return ret;
   };
 
   const auto FindContiguousMinMax = [](const std::vector<int64_t>& input, const int64_t target) {
+    int64_t ret = 0;
     size_t end = input.size() - 2;
     for (size_t i = 0; i < end; i++) {
       int64_t window_size = input[i];
@@ -61,7 +63,7 @@ namespace {
         return min + max;
       }
     }
-    return 0LL;
+    return ret;
   };
 
   const auto LoadInput = [](auto f, size_t prolog_size) {

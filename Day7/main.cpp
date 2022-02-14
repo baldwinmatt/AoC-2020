@@ -60,7 +60,7 @@ namespace {
       DEBUG_PRINT(color << " contains " << num << " " << col);
       bag.contains.insert(std::make_pair(col, num));
       f = bags.emplace(col, b);
-      f.first->second.contained_by.insert(std::make_pair(color, num));
+      f.first->second.contained_by.insert(std::make_pair(std::string(color), num));
       DEBUG_PRINT(col << " contained_by " << color);
     }
 
