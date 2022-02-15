@@ -234,7 +234,7 @@ namespace aoc {
             } catch (...) { }
         }
     }
-    void parse_as_integers(const std::string& s, const std::string_view delims, UnaryIntFunction op) {
+    void parse_as_integers(const std::string_view s, const std::string_view delims, UnaryIntFunction op) {
         std::string_view ss(s);
         std::string_view l;
         while (getline(ss, l, delims)) {
