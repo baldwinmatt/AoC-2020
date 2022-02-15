@@ -4,8 +4,19 @@ namespace {
   using Result = std::pair<int, int>;
   using MappedFileSource = aoc::MappedFileSource<char>;
 
-  constexpr std::string_view SampleInput(R"()");
-  constexpr int SR_Part1 = 0;
+  constexpr std::string_view SampleInput(R"(class: 1-3 or 5-7
+row: 6-11 or 33-44
+seat: 13-40 or 45-50
+
+your ticket:
+7,1,14
+
+nearby tickets:
+7,3,47
+40,4,50
+55,2,20
+38,6,12)");
+  constexpr int SR_Part1 = 71;
   constexpr int SR_Part2 = 0;
 
   const auto LoadInput = [](auto f) {

@@ -4,8 +4,10 @@ namespace {
   using Result = std::pair<int, int>;
   using MappedFileSource = aoc::MappedFileSource<char>;
 
-  constexpr std::string_view SampleInput(R"()");
-  constexpr int SR_Part1 = 0;
+  constexpr std::string_view SampleInput(R"(.#.
+..#
+###)");
+  constexpr int SR_Part1 = 112;
   constexpr int SR_Part2 = 0;
 
   const auto LoadInput = [](auto f) {
