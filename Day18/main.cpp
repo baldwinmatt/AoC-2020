@@ -1,5 +1,7 @@
 #include "aoc/helpers.h"
 
+#include <vector>
+
 namespace {
   using Result = std::pair<int64_t, int64_t>;
   using MappedFileSource = aoc::MappedFileSource<char>;
