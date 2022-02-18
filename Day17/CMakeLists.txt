@@ -3,6 +3,8 @@ file(GLOB_RECURSE SOURCES "*.cpp")
 
 get_filename_component(binary_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++2a-extensions")
+
 # Add the executable.
 add_executable("main_${binary_name}" ${SOURCES})
 set_target_properties("main_${binary_name}" PROPERTIES OUTPUT_NAME "${binary_name}")
